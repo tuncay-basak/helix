@@ -1,81 +1,89 @@
 # Kinds
 
-A **Kind** defines the static structure of a certain type of instance in Helix.
+A **Kind** is a static description of what a certain type of instance can be.
 
-It describes what *can* exist, not what *does* exist.
-
-A kind answers the question:
-
-> “What kind of thing can exist?”
-
-Kinds define **possibility**, not execution.
+Kinds define structure and possibility.
+They do not create instances and do not execute logic.
 
 ---
 
 ## Role of kinds
 
-A kind specifies:
-- which components are present
-- whether components are mutable or immutable
+Kinds describe:
+- which **[Components](components.md)** may exist on an instance
 - whether components are required or optional
-- which marker components (tags) are possible, always present, or always absent
+- whether components are mutable or immutable
+- which marker components may be present or absent
 
-Kinds are purely declarative.
-They do not create instances and do not contain behavior.
+A kind answers the question:
+
+**“What kind of thing can exist?”**
 
 ---
 
-## Declaring a kind
+## Structure, not behavior
+
+Kinds define *structure*, not *behavior*.
+
+They do not:
+- execute logic
+- access data
+- decide when something runs
+- create or destroy instances
+
+Behavior is implemented in **[Systems](systems.md)**.
+Execution is controlled by **[Contexts](contexts.md)**.
+
+---
+
+## Declaration
 
 Kinds are declared explicitly using the `#[kind]` attribute.
 
-```rust
+\`\`\`rust
 #[kind]
 struct Player(
     Has<Id>,
-    HasMut<Name>,
+    HasMut<Position>,
     Opt<Inventory>,
-    OptMut<Target>,
-    Is<Targettable>,
-    Maybe<Promoted>,
-    MaybeMut<Wounded>,
-    Not<Ai>,
+    Maybe<Grounded>,
 );
-```
+\`\`\`
 
-This declaration describes the *structure* and *capabilities* of a `Player`
-instance.
+This declaration describes which components may exist on an instance
+and under which access and presence rules.
 
----
-
-## Components and tags in kinds
-
-Kinds can include:
-- **data components**, which may be required or optional
-- **marker components (tags)**, whose presence or absence carries meaning
-
-For data components, kinds specify:
-- whether the component is always present or optional
-- whether it can be accessed mutably or immutably
-
-For marker components, kinds specify:
-- tags that are always present
-- tags that may or may not be present
-- tags that are always absent
-
-These rules are part of the kind’s static definition and do not require
-runtime checks.
+It does not create any instance.
 
 ---
 
-## Kinds and validation
+## Component presence
 
-Kinds are used by Helix to:
-- validate queries
-- determine system eligibility
-- ensure that incompatible access patterns are rejected at compile time
+Within a kind, components may be:
+- required
+- optional
+- mutable or immutable
 
-A kind that does not satisfy a query’s requirements is simply not eligible.
+Marker components may be:
+- always present
+- always absent
+- conditionally present
+
+These rules are part of the kind’s static definition and are validated
+at compile time whenever possible.
+
+---
+
+## Kinds and instances
+
+A kind does not represent an instance.
+
+Instances:
+- are created by **[Contexts](contexts.md)**
+- follow the structure defined by their kind
+- are accessed by **[Systems](systems.md)** through **[Queries](queries.md)**
+
+A kind only defines what is possible, not what exists.
 
 ---
 
@@ -83,17 +91,18 @@ A kind that does not satisfy a query’s requirements is simply not eligible.
 
 Kinds do not define:
 - how many instances exist
-- when instances are created or destroyed
-- how instances are stored
-- when or where systems run
+- where instances exist
+- how instances are iterated
+- how instances are accessed at runtime
 
-Those concerns are handled by contexts and systems.
+These aspects are defined by **[Contexts](contexts.md)** and
+**[Queries](queries.md)**.
 
 ---
 
 ## Summary
 
-- A kind defines what *can* exist
-- A kind is a static, declarative structure
-- A kind does not perform execution
-- A kind participates in compile-time validation
+- Kinds define structural possibilities
+- Kinds describe which components may exist
+- Kinds do not create instances
+- Kinds do not execute logic
