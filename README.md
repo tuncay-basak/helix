@@ -1,27 +1,95 @@
 # Helix
 
-Helix is a compile-time language for building deterministic runtimes
-(games, simulations, servers, tools) with fully static, typed APIs.
+Helix is an experimental runtime framework written in Rust, focused on **static
+correctness**, **robust execution models**, and **minimal runtime overhead**.
 
-Helix is written *in* Rust syntax, but it is **not a Rust library**.
-It is a language frontend, compiler toolchain, and runtime generator.
+Its goal is to explore how far compile-time knowledge and type-driven design can be
+pushed to reduce runtime checks, make invalid states unrepresentable, and enforce
+explicit system boundaries.
 
-## Core ideas
+---
 
-- User code lives in `src/**.rs`
-- Helix generates typed APIs in `src/helix/`
-- A compiler backend generates a separate runnable project
-- The generated runtime is deterministic by construction
-- Optimization is a backend concern, not a language concern
+## Motivation
 
-## Project status
+Many existing frameworks rely heavily on runtime queries, dynamic checks, or implicit
+behavior to provide flexibility. While powerful, this often makes invalid states
+representable and shifts error detection to runtime.
 
-This repository currently focuses on the **language frontend**:
-syntax, semantics, tooling, and generated APIs.
-The runtime compiler backend will be implemented later.
+Helix explores a different direction:
+- encode execution rules and access constraints in the type system
+- favor explicitness over magic
+- detect structural errors as early as possible (ideally at compile time)
 
-## Structure
+---
 
-- `helix/` — the Helix language toolchain (macros, watcher, CLI)
-- `examples/` — small Helix programs
-- `docs/` — design and architecture notes
+## Core concepts
+
+Helix is built around a small set of explicit concepts:
+
+- **Components**: pure data or marker types
+- **Queries**: statically defined access contracts over components
+- **Kinds**: static descriptions of entity layouts
+- **Systems**: pure logic operating over explicit queries
+- **Contexts**: explicit execution boundaries
+
+These concepts are designed so that incompatible combinations fail to compile, and
+runtime behavior remains explicit and predictable.
+
+---
+
+## Example (simplified)
+
+```rust
+#[component]
+struct Position(Vec2);
+
+#[component]
+struct Velocity(Vec2);
+
+#[query]
+struct Movable(
+    HasMut<Position>,
+    Has<Velocity>,
+);
+
+#[system]
+fn apply_velocity(entity: Movable) {
+    entity.position_mut() += entity.velocity();
+}
+
+In this example:
+
+the query explicitly defines which components are accessed and how
+
+mutation and read-only access are distinguished at the type level
+
+the system logic is pure and cannot access undeclared data
+
+Invalid access patterns or incompatible entity layouts are rejected at compile time.
+
+Execution model
+Systems do not run implicitly. They are executed inside a Context, which defines:
+
+which kinds of entities exist
+
+which systems are allowed to run
+
+the execution boundary (e.g. thread ownership)
+
+This makes execution order and boundaries explicit by design.
+
+Status
+Helix is a personal project and a work in progress.
+The core ideas and syntax are stable, while internal implementation details are still
+being refined.
+
+The current focus is on:
+
+validating the type-level model
+
+refining ergonomics and compile-time diagnostics
+
+keeping the runtime minimal and predictable
+
+License
+MIT
