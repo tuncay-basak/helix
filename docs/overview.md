@@ -49,8 +49,8 @@ A **Kind** defines a *static description* of what a certain type of instance is.
 A kind specifies:
 - which components are present
 - whether components are mutable or immutable
-- whether components are required, optional, or inherent
-- which tags are always present or always absent
+- whether components are required or optional
+- which tags are possible, always present or always absent
 
 In other words, a kind answers the question:
 
