@@ -59,22 +59,22 @@ fn apply_velocity(entity: Movable) {
 ```
 In this example:
 
-the query explicitly defines which components are accessed and how
+- the query explicitly defines which components are accessed and how
 
-mutation and read-only access are distinguished at the type level
+- mutation and read-only access are distinguished at the type level
 
-the system logic is pure and cannot access undeclared data
+- the system logic is pure and cannot access undeclared data
 
 Invalid access patterns or incompatible entity layouts are rejected at compile time.
 
 Execution model
 Systems do not run implicitly. They are executed inside a Context, which defines:
 
-which kinds of entities exist
+- which kinds of entities exist
 
-which systems are allowed to run
+- which systems are allowed to run
 
-the execution boundary (e.g. thread ownership)
+- the execution boundary (e.g. thread ownership)
 
 This makes execution order and boundaries explicit by design.
 
@@ -85,11 +85,11 @@ being refined.
 
 The current focus is on:
 
-validating the type-level model
+- validating the type-level model
 
-refining ergonomics and compile-time diagnostics
+- refining ergonomics and compile-time diagnostics
 
-keeping the runtime minimal and predictable
+- keeping the runtime minimal and predictable
 
 License
 MIT
